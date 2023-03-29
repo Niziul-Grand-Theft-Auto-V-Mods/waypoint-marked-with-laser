@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,20 +40,28 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="creative-table\LaserSource.cs" />
+    <Compile Include="adjustments-for-the-laser-beam\beams-types\PrefabricatedBeam.cs" />
+    <Compile Include="adjustments-for-the-laser-beam\beams-types\SingleBeam.cs" />
+    <Compile Include="laser-beam-settings-manager\single-beam\SingleBeamManager.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="settings\Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="setup-manager\Settings.cs" />
-    <Compile Include="setup-manager\SettingColor.cs" />
+    <Compile Include="adjustments-for-the-laser-beam\LaserStructure.cs" />
+    <Compile Include="laser-beam-settings-manager\single-beam\StSingleBeamSetup.cs" />
+    <Compile Include="laser-beam-settings-manager\prefabricated-beam\PrefabricatedBeamManager.cs" />
+    <Compile Include="laser-beam-settings-manager\prefabricated-beam\StPrefabricatedBeamSetup.cs" />
+    <Compile Include="settings\the-damn-strings-for-the-configuration-files\StStringsForBaseToCreateThePrefabricatedBeams.cs" />
+    <Compile Include="settings\the-damn-strings-for-the-configuration-files\StStringsForSetTheSingleBeamColor.cs" />
+    <Compile Include="settings\the-damn-strings-for-the-configuration-files\StStringsForTheLaserOperationSettings.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
