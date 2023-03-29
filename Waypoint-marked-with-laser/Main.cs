@@ -1,41 +1,69 @@
 ﻿using GTA;
 using GTA.Math;
 
+using System.Collections.Generic;
 
-using System;
-using System.Drawing;
+using Waypoint_marked_with_laser.settings;
 
-using Waypoint_marked_with_laser.creative_table;
-using Waypoint_marked_with_laser.setup_manager;
+using Waypoint_marked_with_laser.adjustments_for_the_laser_beam;
+using Waypoint_marked_with_laser.adjustments_for_the_laser_beam.beams_types;
+
+using Waypoint_marked_with_laser.laser_beam_settings_manager.single_beam;
+using Waypoint_marked_with_laser.laser_beam_settings_manager.prefabricated_beam;
+
 
 namespace Waypoint_marked_with_laser
 {
     public class Main : Script
     {
-        private Ped player =
-            Game.Player.Character;
+        private Settings _settings =
+            new Settings();
 
-        private LaserSource laserSource =
-            new LaserSource();
+        private LaserStructure _laserStructure =
+            new LaserStructure();
 
-        private Boolean IsThereLaserOnTheMap =
+        private Vector3 _currentWaypointPosition =
+            new Vector3();
+
+        private Vector3 _initialWaypointPosition =
+            new Vector3();
+
+        private bool _isThereLaserStructureOnTheMap =
             false;
 
-        private Color colorOfTheLaserBeam =
-            new Color();
+        private readonly bool _isToEnableTheSingleBeam =
+            false;
 
-        private Vector3 waypointPosition =
-            new Vector3();
-        private Vector3 currentWaypointPosition =
-            new Vector3();
+        private readonly bool _isToEnableThePrefabricatedBeams =
+            false;
+
+        private StSingleBeamSetup _stSingleBeamSetup =
+            new StSingleBeamSetup();
+
+        private IList<StPrefabricatedBeamSetup> _allStPrefabricatedBeamSetup =
+            new List<StPrefabricatedBeamSetup>();
+
 
 
         public Main()
         {
-            new Settings(GetRelativeFilePath(@"WaypointMarkedWithLaser"));
+            _settings =
+                new Settings(GetRelativeFilePath($@"WaypointMarkedWithLaser"));
 
-            colorOfTheLaserBeam =
-                SettingColor.ColorOfTheLaserBeam;
+            _isToEnableTheSingleBeam =
+                _settings.GetIfItIsToEnableTheSingleBeam();
+
+            _isToEnableThePrefabricatedBeams =
+                _settings.GetIfItIsToEnableThePrefabricatedBeams();
+            
+            if (_isToEnableTheSingleBeam)
+                _stSingleBeamSetup =
+                    _settings.ReturnTheCurrentStSingleBeamSetup();
+
+            if (_isToEnableThePrefabricatedBeams)
+                _allStPrefabricatedBeamSetup =
+                    _settings.ReturnAllStPrefabricatedBeamSetup();
+
 
             Tick += (o, e) =>
             { Start(); };
@@ -44,55 +72,85 @@ namespace Waypoint_marked_with_laser
             { Finish(); };
         }
 
-
-
         private void Start()
         {
             var waypointBlip =
                 World.WaypointBlip;
 
-            var isItPossibleToGenerateTheStructureThatFiresTheLaser =
-                (waypointBlip != null && !IsThereLaserOnTheMap);
+            var isTheWaypointActive =
+                waypointBlip != null;
 
 
-            if (isItPossibleToGenerateTheStructureThatFiresTheLaser)
+            switch (isTheWaypointActive)
             {
-                GenerateTheLaserStructure();
+                case true:
+                    {
+                        if (!_isThereLaserStructureOnTheMap)
+                        {
+                            _initialWaypointPosition =
+                                waypointBlip.Position;
 
-                currentWaypointPosition = World.WaypointPosition;
-            }
-            else if (waypointBlip != null)
-            {
-                waypointPosition = World.WaypointPosition;
+                            PreConfigureTheLaserStructure();
+                        }
+                        else
+                        {
+                            _currentWaypointPosition =
+                                waypointBlip.Position;
 
-                if (currentWaypointPosition == waypointPosition)
-                {
-                    LaserBeam();
-                }
-                else
-                {
-                    Finish();
-                }
+                            switch (_initialWaypointPosition == _currentWaypointPosition)
+                            {
+                                case true:
+                                    {
+                                        FireTheLaserBeam();
+                                    }
+                                    break;
+                                case false:
+                                    {
+                                        ReconfigureTheLaserStructure();
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+
+                case false:
+                    {
+                        return;
+                    }
             }
         }
+
         private void Finish()
         {
-            laserSource.DestroyTheLaserStructure();
-            IsThereLaserOnTheMap = false;
+            ReconfigureTheLaserStructure();
+            _settings.ClearAllLists();
         }
 
-        void GenerateTheLaserStructure()
+        void ReconfigureTheLaserStructure()
         {
-            laserSource.LaserCreator();
-            IsThereLaserOnTheMap = true;
+            _laserStructure.DestroyTheLaserStructure();
+            _isThereLaserStructureOnTheMap = false;
         }
-        void LaserBeam()
+        void PreConfigureTheLaserStructure()
         {
-            var laserBeamHeight = new Vector3(waypointPosition.X, waypointPosition.Y, waypointPosition.Z + 2000f);
+            _laserStructure.CreateTheLaserStructure();
+            _isThereLaserStructureOnTheMap = true;
+        }
+        void FireTheLaserBeam()
+        {
+            if (_isToEnableTheSingleBeam)
+            {
+                new SingleBeam(_stSingleBeamSetup);
+            }
 
-            World.DrawLine(waypointPosition,
-                           laserBeamHeight,
-                           colorOfTheLaserBeam);
+            if (_isToEnableThePrefabricatedBeams)
+            {
+                foreach (var stPrefabricatedBeamSetup in _allStPrefabricatedBeamSetup)
+                {
+                    new PrefabricatedBeam(stPrefabricatedBeamSetup);
+                }
+            }
         }
     }
 }
