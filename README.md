@@ -1,4 +1,4 @@
-<p><a href="https://www.gta5-mods.com/scripts/waypoint-marked-with-laser-net#description_tab" target="_blank"><img alt="Alternative Yaw Control - Keyboards" src="/Repository-assets/Waypoint-marked-with-laser/Cover.png" /></a></p>
+<p><a href="https://www.gta5-mods.com/scripts/waypoint-marked-with-laser-net#description_tab" target="_blank"><img alt="Alternative Yaw Control - Keyboards" src="https://img.gta5-mods.com/q95/images/waypoint-marked-with-laser-net/25c187-waypoint-marked-with-laser.png" /></a></p>
 
 <p><strong>About the mod</strong></p>
 
